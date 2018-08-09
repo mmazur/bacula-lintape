@@ -114,6 +114,7 @@ static RES_ITEM dev_items[] = {
    {"BackwardSpaceFile",     store_bit,  ITEM(res_dev.cap_bits), CAP_BSF,  ITEM_DEFAULT, 1},
    {"BsfAtEom",              store_bit,  ITEM(res_dev.cap_bits), CAP_BSFATEOM, ITEM_DEFAULT, 0},
    {"IOErrorAtEom",          store_bit,  ITEM(res_dev.cap_bits), CAP_IOERRATEOM, ITEM_DEFAULT, 0},
+   {"IbmLintape",            store_bit,  ITEM(res_dev.cap_bits), CAP_IBMLINTAPE, ITEM_DEFAULT, 0},
    {"TwoEof",                store_bit,  ITEM(res_dev.cap_bits), CAP_TWOEOF, ITEM_DEFAULT, 0},
    {"ForwardSpaceRecord",    store_bit,  ITEM(res_dev.cap_bits), CAP_FSR,  ITEM_DEFAULT, 1},
    {"ForwardSpaceFile",      store_bit,  ITEM(res_dev.cap_bits), CAP_FSF,  ITEM_DEFAULT, 1},

@@ -57,6 +57,7 @@
 
 #include "bacula.h"
 #include "stored.h"
+#include "IBM_tape.h"
 
 #ifndef O_NONBLOCK
 #define O_NONBLOCK 0
@@ -616,8 +617,26 @@ bool tape_dev::fsf(int num)
              *  at EOM instead of EOF
              */
             } else if (has_cap(CAP_IOERRATEOM) && at_eof() && errno == EIO) {
-               Dmsg0(100, "Got EIO on read, assuming that's due to EOD\n");
-               stat = 0;
+               if (has_cap(CAP_IBMLINTAPE)) {
+                  struct request_sense sense_data;
+                  int rc;
+                  Dmsg0(100, "Got EIO on read, checking lin_tape sense data\n");
+                  memset(&sense_data, 0, sizeof(struct request_sense));
+                  rc = ioctl(m_fd, SIOC_REQSENSE, &sense_data);
+                  if (rc == 0 && sense_data.key == 0x08 && sense_data.asc == 0x00 && sense_data.ascq == 0x05) {
+                     Dmsg0(100, "Sense data confirms it's EOD\n");
+                     stat = 0;
+                  } else {
+                     Dmsg0(100, "Not at EOD, might be a real error. Check sense trace from lin_taped logs.\n");
+                     set_eot();
+                     clrerror(-1);
+                     Mmsg1(errmsg, _("read error on %s. ERR=Input/Output error.\n"), print_name());
+                     break;
+                  }
+               } else {
+                  Dmsg0(100, "Got EIO on read, assuming that's due to EOD\n");
+                  stat = 0;
+               }
             } else {
                berrno be;
                set_eot();
