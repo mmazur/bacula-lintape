@@ -605,10 +605,18 @@ bool tape_dev::fsf(int num)
             if (errno == ENOMEM) {     /* tape record exceeds buf len */
                stat = rbuf_len;        /* This is OK */
             /*
-             * On IBM drives, they return ENOSPC at EOM
+             * Old IBM drivers return ENOSPC at EOM
              *  instead of EOF status
              */
             } else if (at_eof() && errno == ENOSPC) {
+               Dmsg0(100, "Got ENOSPC on read, assuming that's due to EOD\n");
+               stat = 0;
+            /*
+             * Some drivers (like IBM's lin_tape) return EIO
+             *  at EOM instead of EOF
+             */
+            } else if (has_cap(CAP_IOERRATEOM) && at_eof() && errno == EIO) {
+               Dmsg0(100, "Got EIO on read, assuming that's due to EOD\n");
                stat = 0;
             } else {
                berrno be;

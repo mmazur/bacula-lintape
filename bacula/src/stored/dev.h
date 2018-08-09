@@ -124,6 +124,7 @@ enum {
 #define CAP_REQMOUNT       (1<<21)    /* Require mount and unmount */
 #define CAP_CHECKLABELS    (1<<22)    /* Check for ANSI/IBM labels */
 #define CAP_BLOCKCHECKSUM  (1<<23)    /* Create/test block checksum */
+#define CAP_IOERRATEOM     (1<<24)    /* IOError at EOM */
 
 /* Test state */
 #define dev_state(dev, st_state) ((dev)->state & (st_state))
